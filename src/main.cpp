@@ -16,20 +16,16 @@ void turn(int degrees) { // + doprava - doleva
     rkMotorsDrive(3.141 * wheel_diameter * degrees / 360 * ticksToMm, -3.141 * wheel_diameter * degrees / 360 * ticksToMm, speed);
 }
 
-void set_state(){
-    state = 5;
-}
-
 void curve(int radius, byte new_state, bool right){
     int sR = radius/radius * speed;
     int sL = (radius + wheel_diameter) / radius * speed;
     if (right)
     {
-    rkMotorsDriveRightAsync(ticksToMm * radius * PI, sR, [](){set_state();});
+    rkMotorsDriveRightAsync(ticksToMm * radius * PI, sR, [&](){state = new_state;});
     rkMotorsDriveLeftAsync(ticksToMm * (radius + wheel_diameter) * PI, sL);
     }
     else{
-    rkMotorsDriveLeftAsync(ticksToMm * radius * PI, sR, [](){set_state();});
+    rkMotorsDriveLeftAsync(ticksToMm * radius * PI, sR, [&](){state = new_state;});
     rkMotorsDriveRightAsync(ticksToMm * (radius + wheel_diameter) * PI, sL);
     }
 }
