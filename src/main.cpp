@@ -21,11 +21,11 @@ void curve(int radius, byte new_state, bool right){
     int sL = (radius + wheel_diameter) / radius * speed;
     if (right)
     {
-    rkMotorsDriveRightAsync(ticksToMm * radius * PI, sR, [&](){state = new_state;});
+    rkMotorsDriveRightAsync(ticksToMm * radius * PI, sR, [&, new_state](){state = new_state;});
     rkMotorsDriveLeftAsync(ticksToMm * (radius + wheel_diameter) * PI, sL);
     }
     else{
-    rkMotorsDriveLeftAsync(ticksToMm * radius * PI, sR, [&](){state = new_state;});
+    rkMotorsDriveLeftAsync(ticksToMm * radius * PI, sR, [&, new_state](){state = new_state;});
     rkMotorsDriveRightAsync(ticksToMm * (radius + wheel_diameter) * PI, sL);
     }
 }
@@ -84,46 +84,44 @@ void setup() {
         }
     }
 
-    while(true)
-    {
-        switch (state)
-        {
-        case 1:
-            state = 2;
-            forward(500);
-            state = 3;
-            break;
-        case 3:
-            state = 4;
-            curve(150, 5, true);
-            break;
-        case 5:
-            state = 6;
-            forward(300);
-            state = 7;
-            break;
-        case 7:
-            state = 8;
-            curve(150, 9, false);
-            break;
-        case 9:
-            state = 10;
-            forward(1000);
-            state = 11;
-            break;
-
-        default:
-            break;
-        }
-    }
+    //while(true)
+    //{
+    //    printf("state= %u /n", state);
+    //    switch (state)
+    //    {
+    //    case 1:
+    //        state = 2;
+    //        forward(500);
+    //        state = 3;
+    //        break;
+    //    case 3:
+    //        state = 4;
+    //        curve(150, 5, true);
+    //        break;
+    //    case 5:
+    //        state = 6;
+    //        forward(50);
+    //        state = 7;
+    //        break;
+    //    case 7:
+    //        state = 8;
+    //        curve(150, 9, false);
+    //        break;
+    //    case 9:
+    //        state = 10;
+    //        forward(1000);
+    //        state = 11;
+    //        break;
+    //    }
+    //}
         
 
     while(true){
-        rkServosSetPosition(1, 0);
-        rkServosSetPosition(2,0);
+        //rkServosSetPosition(1, 90);x
+        rkServosSetPosition(2,90);
         delay(2000);
-        rkServosSetPosition(1, -45);
-        rkServosSetPosition(2, -45);
+        //rkServosSetPosition(1, -120);
+        rkServosSetPosition(2, -120);
         delay(2000);
     }
 }
