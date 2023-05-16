@@ -1,4 +1,8 @@
+#include <Arduino.h>
+#include "SmartServoBus.hpp"
 #include "robotka.h"
+#include "arm_commands.h"
+
 
 // Funkce setup se zavolá vždy po startu robota.
 const int speed = 60;
@@ -77,6 +81,8 @@ void setup() {
     // Upravte nastavení, například:
     // cfg.motor_max_power_pct = 30; // limit výkonu motorů na 30%
     rkSetup(cfg);
+    servoBus.begin(1, UART_NUM_1, GPIO_NUM_27);
+    servoBus.setAutoStop(0, true);
 
     while(true){
         if(rkButtonIsPressed(BTN_UP)){
