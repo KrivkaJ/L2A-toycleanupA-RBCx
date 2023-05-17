@@ -4,8 +4,8 @@ static SmartServoBus servoBus;
 void arm_test()
 {
     
-    printf("servo moved to:%f\n", rkServosGetPosition(1));
     servoBus.set(0, 90_deg, 200.f, 1.f);
+    printf("servo moved to:%f\n", rkServosGetPosition(1));
     delay(1500);
   
    
