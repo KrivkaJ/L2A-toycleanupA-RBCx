@@ -21,22 +21,24 @@ void turn(int degrees) {
     rkMotorsDrive(3.141 * wheel_diameter * degrees / 360 * ticksToMm, -3.141 * wheel_diameter * degrees / 360 * ticksToMm, speed);
 }
 
-void curve(int radius, byte new_state, bool right){
-    int sR = radius/radius * speed;
-    int sL = (radius + wheel_diameter) / radius * speed;
+void curve(int radius, int degrees, byte new_state, bool right){
+    int sR = radius/radius * 40;
+    int sL = (radius + wheel_diameter) / radius * 40;
+    printf("sR: %i, sL: %i\n", sR, sL);
     if (right)
     {
-    rkMotorsDriveRightAsync(ticksToMm * radius * PI, sR, [&, new_state](){state = new_state;});
-    rkMotorsDriveLeftAsync(ticksToMm * (radius + wheel_diameter) * PI, sL);
+    rkMotorsDriveRightAsync((ticksToMm * radius * PI * degrees)/180, sR, [&, new_state](){state = new_state;});
+    rkMotorsDriveLeftAsync((ticksToMm * (radius + wheel_diameter) * PI * degrees)/180, sL);
     }
     else{
-    rkMotorsDriveLeftAsync(ticksToMm * radius * PI, sR, [&, new_state](){state = new_state;});
-    rkMotorsDriveRightAsync(ticksToMm * (radius + wheel_diameter) * PI, sL);
+    rkMotorsDriveLeftAsync((ticksToMm * radius * PI * degrees)/180, sR, [&, new_state](){state = new_state;});
+    rkMotorsDriveRightAsync((ticksToMm * (radius + wheel_diameter) * PI * degrees)/180, sL);
     }
 }
 void curve_back(int radius, byte new_state, bool right){
-    int sR = radius/radius * speed;
-    int sL = (radius - wheel_diameter) / radius * speed;
+    int sR = radius/radius * 40;
+    int sL = (radius + wheel_diameter) / radius * 40;
+    printf("sR: %i, sL: %i\n", sR, sL);
     if (right)
     {
     rkMotorsDriveRightAsync(-ticksToMm * radius * PI, sR, [&, new_state](){state = new_state;});
@@ -65,17 +67,9 @@ void Skoback() {
     forward(850);
 }
 
-void Sko() {
-    forward(500);
-    curve(150, 1, true);
-    forward(300);
-    curve(150, 1, false);
-    forward(1000);
-}
-
 void update_sensors() {
     g_US = rkUltraMeasure(1);
-    printf("n/ g_US: %f /n", g_US);
+    printf(" g_US: %f \n", g_US);
     //std::cout << " " << std::endl;
 }
 void Sko_reversed() {
@@ -106,18 +100,18 @@ void setup() {
 
     while(true)
     {
-        printf("state= %u /n", state);
+        //printf("state= %u \n", state);
+        delay(20);
         switch (state)
         {
         case 1:
             state = 2;
-            //forward(500);
-            curve_back(150, 3, true);
-            //state = 3;
+            forward(500);
+            state = 3;
             break;
         case 3:
             state = 4;
-            curve(150, 5, true);
+            curve(150, 180, 5, true);
             break;
         case 5:
             state = 6;
@@ -126,7 +120,7 @@ void setup() {
             break;
         case 7:
             state = 8;
-            curve(150, 9, false);
+            curve(150, 150, 9, false);
             break;
         case 9:
             state = 10;
@@ -144,7 +138,7 @@ void setup() {
             break;
         case 15:
             state = 16;
-            curve(-150, 17, false);
+            curve_back(150, 17, false);
             break;
         case 17:
             state = 18;
@@ -153,13 +147,31 @@ void setup() {
             break;
         case 19:
             state = 20;
-            curve(-150, 21, true);
+            curve_back(130, 21, true);
             break;
         case 21:
             state = 22;
             forward(-500);
             state = 23;
             break;     
+        case 23:
+            state = 24;
+            rkServosSetPosition(3,0);
+            delay(1000);
+            state = 25;
+            break;
+        case 26:
+            state = 27;
+            rkServosSetPosition(3, 90);
+            delay(1000);
+            state = 28;
+            break;
+        case 28:
+            state = 29;
+            rkServosSetPosition(3, -90);
+            delay(1000);
+            state = 30;
+            break;
         }
     }
         
