@@ -2,6 +2,7 @@
 #include "SmartServoBus.hpp"
 #include "robotka.h"
 #include "arm_commands.h"
+#include "Adafruit_TCS34725.h"
 
 
 // Funkce setup se zavolá vždy po startu robota.
@@ -10,6 +11,25 @@ float ticksToMm = 3.62; // prepocet z tiku v enkoderech na mm
 byte state = 1;
 float wheel_diameter = 162;
 float g_US = 1;
+
+typedef enum {
+    RED,
+    GREEN,
+    BLUE
+}RGB;
+// pokud se nepovede neco inicializovat (RGB senzor), program se zasekne v teto funkci
+void trap()
+{
+    Serial.println("trap\n");
+    while(1);
+}
+
+static const uint8_t TCS_led_pin = 2;
+static const uint8_t TCS_SDA_pin = 21;
+static const uint8_t TCS_SCL_pin = 22;
+
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_1X);
+
 
 void forward(int mm) { //
 
@@ -84,6 +104,42 @@ void Sko_reversed() {
     forward(850);
 }
 
+RGB get_rgb(){
+    float r, g, b;
+    tcs.getRGB(&r, &g, &b);
+    int red[10], green[10], blue[10];
+    for (size_t i = 0; i < 10; i++)
+    {
+        tcs.getRGB(&r, &g, &b);
+        red[i] = r;
+        green[i] = g;
+        blue[i] = b;
+        delay(200);
+    }
+    int sum_red = 0, sum_green = 0, sum_blue = 0;
+    for (size_t i = 0; i < 10; i++)
+    {
+        sum_red += red[i];
+        sum_green += green[i];
+        sum_blue += blue[i];
+    }
+    byte red_avg = sum_red / 10;
+    byte green_avg = sum_green / 10;
+    byte blue_avg = sum_blue / 10;
+
+    if (red_avg > green_avg && red_avg > blue_avg)
+    {
+        return RED;
+    }
+    else if (blue_avg > red_avg && blue_avg > green_avg)
+    {
+        return BLUE;
+    }
+    else{
+        return GREEN;
+    }
+}
+
 void setup() {
     rkConfig cfg;
     // Upravte nastavení, například:
@@ -92,13 +148,28 @@ void setup() {
     servoBus.begin(1, UART_NUM_1, GPIO_NUM_27);
     servoBus.setAutoStop(0, true);
 
+    Serial.begin(115200);
+    Serial.println("start");
+
+    // inicializace RGB
+    pinMode(TCS_SDA_pin, PULLUP);
+    pinMode(TCS_SCL_pin, PULLUP);
+    Wire1.begin(TCS_SDA_pin, TCS_SCL_pin, 100000);
+    if (!tcs.begin(TCS34725_ADDRESS, &Wire1)) {
+        Serial.println("Can not connect to the RGB sensor");
+        trap();
+    }
+    pinMode(TCS_led_pin, GPIO_MODE_OUTPUT);
+    digitalWrite(TCS_led_pin, 1);
+    Serial.println("Starting main loop\n");
+
     while(true){
         if(rkButtonIsPressed(BTN_UP)){
                 break;
         }
     }
 
-    while(true)
+    while(false)
     {
         //printf("state= %u \n", state);
         delay(20);
@@ -174,15 +245,22 @@ void setup() {
             break;
         }
     }
-        
-        //rkServosSetPosition(1, 90);x
-        //rkServosSetPosition(2, 0);
-        //delay(2000);
-        //while (true)
-        //{       
-        //servoBus.set(0, 240_deg, 200.f, 1.f);
-        //delay(2000);
-        //servoBus.set(0, 0_deg, 200.f, 1.f);
-        //delay(2000);
-        //}
+
+    int rgb_value;
+    while(true){
+        rgb_value = get_rgb();
+        printf("barva: %d \n", rgb_value);
+        delay(1000);
+    }
+}
+void loop() {
+    // precteni a poslani RGB
+    float r, g, b;
+    tcs.getRGB(&r, &g, &b);
+    Serial.print(uint8_t(r)); Serial.print(", "); Serial.print(uint8_t(g)); Serial.print(", "); Serial.print(uint8_t(b));Serial.print(" || "); 
+    uint16_t red, green, blue, clear;
+    tcs.getRawData(&red, &green, &blue, &clear);
+    Serial.print(red); Serial.print(", "); Serial.print(green); Serial.print(", "); Serial.print(blue); Serial.print(", "); 
+    Serial.print(clear); Serial.print("\n "); 
+    delay(1000);
 }
