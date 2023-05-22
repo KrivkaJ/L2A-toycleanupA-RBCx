@@ -5,9 +5,6 @@
 
 byte state = 1;
 
-#include "motors_commands.h"
-#include "arm_commands.h"
-
 
 // Funkce setup se zavolá vždy po startu robota.
 float g_US = 1;
@@ -32,9 +29,11 @@ static const uint8_t TCS_SCL_pin = 22;
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_1X);
 
+#include "arm_commands.h"
+#include "motors_commands.h"
 
 void encodery() {
-    Serial.printf("L: %f, R: %f", rkMotorsGetPositionLeft(), rkMotorsGetPositionRight());
+    Serial.printf("L: %f, R: %f\n", rkMotorsGetPositionLeft(), rkMotorsGetPositionRight());
     // rkMotorsGetPositionLeft();
     // rkMotorsGetPositionRight();
 }
@@ -112,17 +111,9 @@ void setup() {
                 break;
         }
     }
-
-        while (true)
-    {
-        if (rkButtonIsPressed(BTN_UP))
-        {
-            break;
-        }
-    }
-
+printf("batery percent: %u\n", rkBatteryPercent());
     /////////////////////////////////////
-    while (true)
+    while (false)
     {
         // printf("state= %u \n", state);
         delay(20);
@@ -162,10 +153,22 @@ void setup() {
             turn(-90);
             back_button();
             // jizda pro kostku
-            forward(700);
-            //tady se rozhodne na jakou barvu robot pojede 
-            // tady se pozna barva a pojede se do spravneho pole
-            back_button();
+            arm_down();
+            go_for_brick();
+            //tady se rozhodne na jakou barvu robot pojede
+            rgb_value = get_rgb();
+            if (rgb_value = RED)
+            {
+                go_to_red();
+            }
+            else if (rgb_value = GREEN)
+            {
+                go_to_green();
+            }
+            else
+            {
+                go_to_blue();
+            }
             // jizda zpet ke zdi nakonec eska
             forward(220);
             turn(93);
@@ -198,9 +201,23 @@ void setup() {
         }
     }
     while(true){
-        rgb_value = get_rgb();
-        printf("barva: %d \n", rgb_value);
-        delay(1000);
+        //rgb_value = get_rgb();
+        //printf("barva: %d \n", rgb_value);
+        //delay(1000);
+        //servoBus.set(0, 240_deg, 200.f, 1.f);
+        //delay(2000);   
+        for (size_t i = 0; i < 3; i++)
+        {
+        printf("smart servo moved to: %f\n", servoBus.pos(0).deg());
+        servoBus.set(0, 160_deg, 200.f, 1.f);
+        delay(2000);
+        }
+        for (size_t i = 0; i < 3; i++)
+        {
+        printf("smart servo moved to: %f\n", servoBus.pos(0).deg());
+        servoBus.set(0, 115_deg, 200.f, 1.f);
+        delay(2000);
+        }
     }
 }
 void loop() {

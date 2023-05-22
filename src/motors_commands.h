@@ -78,3 +78,52 @@ void turn_by_wall()
     delay(1000);
     back_button();
 }
+
+uint16_t red, green, blue, clear, encoder;
+
+void go_for_brick(){
+    byte timer = 0;
+    rkMotorsSetSpeed(50, 50);
+    while((clear < 200) && (timer <= 15)){
+        timer += 1;
+        tcs.getRawData(&red, &green, &blue, &clear);
+        printf("clear: %hu, timer: %hhu\n", clear, timer);
+        delay(200);
+    }
+    rkMotorsSetSpeed(0, 0);
+}
+//robot jede na cervene pole
+void go_to_red(){
+//sevre klepeta
+arm_up();
+back_button();
+forward(150);
+turn(-90);
+forward(-450);//doladit
+turn(90);
+back_button();
+arm_back();
+//klepeta pustit
+}
+
+void go_to_green(){
+//sevre klepeta
+arm_up();
+back_button();
+arm_back();
+//klepeta pustit
+}
+
+
+void go_to_blue(){
+//sevre klepeta
+arm_up();
+back_button();
+forward(150);
+turn(90);
+forward(-450);//doladit
+turn(-90);
+back_button();
+arm_back();
+//klepeta pustit
+}
