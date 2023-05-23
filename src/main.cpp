@@ -3,7 +3,7 @@
 #include "robotka.h"
 #include "Adafruit_TCS34725.h"
 
-byte state = 69;
+byte state = 1;
 
 
 // Funkce setup se zavolá vždy po startu robota.
@@ -44,7 +44,7 @@ void update_sensors() {
     //std::cout << " " << std::endl;
 }
 
-RGB get_rgb(){
+RGB rgb_get(){
     float r, g, b;
     tcs.getRGB(&r, &g, &b);
     int red[10], green[10], blue[10];
@@ -54,7 +54,6 @@ RGB get_rgb(){
         red[i] = r;
         green[i] = g;
         blue[i] = b;
-        delay(100);
     }
     int sum_red = 0, sum_green = 0, sum_blue = 0;
     for (size_t i = 0; i < 10; i++)
@@ -162,7 +161,7 @@ printf("batery percent: %u\n", rkBatteryPercent());
             break;
         case 9:
             state = 10;
-      /*    forward(1750);
+            forward(1750);
             // otocka do hriste
             turn_by_wall();
             // jizda doprostred hriste
@@ -170,16 +169,16 @@ printf("batery percent: %u\n", rkBatteryPercent());
             turn(-90);
             back_button();
             // jizda pro kostku
-            arm_down();     */
+            arm_down();     
             go_for_brick();
             klepeta_close();
             //tady se rozhodne na jakou barvu robot pojede
-            rgb_value = get_rgb();
-            if (rgb_value = RED)
+            rgb_value = rgb_get();
+            if (rgb_value == RED)
             {
                 go_to_red();
             }
-            else if (rgb_value = GREEN)
+            else if (rgb_value == GREEN)
             {
                 go_to_green();
             }
@@ -188,12 +187,9 @@ printf("batery percent: %u\n", rkBatteryPercent());
                 go_to_blue();
             }
             // jizda zpet ke zdi nakonec eska
-            arm_up();
-            forward(220);
-            turn(93);
             back_button();
             forward(50);
-            turn(75);
+            turn(80);
             back_button();
             // cesta z rohu eskem zpet
             forward(100);
@@ -205,42 +201,21 @@ printf("batery percent: %u\n", rkBatteryPercent());
         case 11:
             state = 12;
             // musi se dopocitat
-            curve(150, 90, 13, true);
+            curve(200, 90, 13, true);
             break;
         case 13:
             state = 14;
             // musi se dopocitat
-            curve(150, 180, 15, true);
+            curve(180, 180, 15, false);
             break;
         case 15:
             state = 16;
             forward(500);
             state = 17;
             break;
-        case 69:
-            state = 70;
-            klepeta_close();
-            go_to_red();
         }
     }
-    while(false){
-        //rgb_value = get_rgb();
-        //printf("barva: %d \n", rgb_value);
-        //delay(1000);
-        //servoBus.set(0, 240_deg, 200.f, 1.f);
-        //delay(2000);   
-        for (size_t i = 0; i < 3; i++)
-        {
-        printf("smart servo moved to: %f\n", servoBus.pos(0).deg());
-        servoBus.set(0, 160_deg, 200.f, 1.f);
-        delay(2000);
-        }
-        for (size_t i = 0; i < 3; i++)
-        {
-        printf("smart servo moved to: %f\n", servoBus.pos(0).deg());
-        servoBus.set(0, 115_deg, 200.f, 1.f);
-        delay(2000);
-        }
+    while(true){
     }
 }
 void loop() {

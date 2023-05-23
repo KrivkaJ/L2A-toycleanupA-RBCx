@@ -112,8 +112,13 @@ forward(-450);//doladit
 turn(90);
 back_button();
 arm_back();
-delay(1000);
+forward(30);
 klepeta_open();
+arm_up();
+forward(200);
+turn(-90);
+forward(500);
+turn(180);
 }
 
 void go_to_green(){
@@ -121,8 +126,11 @@ void go_to_green(){
 arm_up();
 back_button();
 arm_back();
-delay(1000);
+forward(30);
 klepeta_open();
+arm_up();
+forward(200);
+turn(-90);
 }
 
 
@@ -136,6 +144,9 @@ forward(-450);//doladit
 turn(-90);
 back_button();
 arm_back();
-delay(1000);
+forward(30);
 klepeta_open();
+arm_up();
+forward(200);
+turn(-90);
 }

@@ -45,6 +45,9 @@ void arm_up()
 void arm_back()
 {
     rkServosSetPosition(2, -90);
+    delay(500);
+    rkServosDisable(2);
+    delay(500);
     printf("arm in delivery mode, angle:%f\n", rkServosGetPosition(1));
     
 }
