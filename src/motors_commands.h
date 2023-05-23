@@ -79,7 +79,7 @@ void turn_by_wall()
     back_button();
 }
 
-uint16_t red, green, blue, clear, encoder;
+uint16_t red, green, blue, clear;
 
 void go_for_brick(){
     byte timer = 0;
@@ -91,6 +91,15 @@ void go_for_brick(){
         delay(200);
     }
     rkMotorsSetSpeed(0, 0);
+    if (clear < 200)
+    {
+        printf("found by rgb senzor\n");
+    }
+    else
+    {
+        printf("stoped by timer\n");
+    }
+    
 }
 //robot jede na cervene pole
 void go_to_red(){
@@ -103,7 +112,8 @@ forward(-450);//doladit
 turn(90);
 back_button();
 arm_back();
-//klepeta pustit
+delay(1000);
+klepeta_open();
 }
 
 void go_to_green(){
@@ -111,7 +121,8 @@ void go_to_green(){
 arm_up();
 back_button();
 arm_back();
-//klepeta pustit
+delay(1000);
+klepeta_open();
 }
 
 
@@ -125,5 +136,6 @@ forward(-450);//doladit
 turn(-90);
 back_button();
 arm_back();
-//klepeta pustit
+delay(1000);
+klepeta_open();
 }

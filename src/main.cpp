@@ -3,7 +3,7 @@
 #include "robotka.h"
 #include "Adafruit_TCS34725.h"
 
-byte state = 1;
+byte state = 69;
 
 
 // Funkce setup se zavolá vždy po startu robota.
@@ -70,15 +70,18 @@ RGB get_rgb(){
     if (red_avg > green_avg && red_avg > blue_avg)
     {
         rgb_value = RED;
+        printf("RED\n");
         return RED;
     }
     else if (blue_avg > red_avg && blue_avg > green_avg)
     {
         rgb_value = BLUE;
+        printf("BLUE\n");
         return BLUE;
     }
     else{
         rgb_value = GREEN;
+        printf("GREEN\n");
         return GREEN;
     }
 }
@@ -106,6 +109,20 @@ void setup() {
     digitalWrite(TCS_led_pin, 1);
     Serial.println("Starting main loop\n");
 
+    //start tlacitko pro kalibraci klepet
+    while(true){
+        if(rkButtonIsPressed(BTN_UP)){
+                break;
+        }
+    }
+    //kalibrace klepet
+    for (size_t i = 0; i < 3; i++)
+    {
+        servoBus.set(0, 140_deg, 200.f, 1.f);
+        delay(1000);
+        printf("smart servo moved to: %f\n", servoBus.pos(0).deg());
+    }
+    // start tlacitko
     while(true){
         if(rkButtonIsPressed(BTN_UP)){
                 break;
@@ -113,7 +130,7 @@ void setup() {
     }
 printf("batery percent: %u\n", rkBatteryPercent());
     /////////////////////////////////////
-    while (false)
+    while (true)
     {
         // printf("state= %u \n", state);
         delay(20);
@@ -145,7 +162,7 @@ printf("batery percent: %u\n", rkBatteryPercent());
             break;
         case 9:
             state = 10;
-            forward(1750);
+      /*    forward(1750);
             // otocka do hriste
             turn_by_wall();
             // jizda doprostred hriste
@@ -153,8 +170,9 @@ printf("batery percent: %u\n", rkBatteryPercent());
             turn(-90);
             back_button();
             // jizda pro kostku
-            arm_down();
+            arm_down();     */
             go_for_brick();
+            klepeta_close();
             //tady se rozhodne na jakou barvu robot pojede
             rgb_value = get_rgb();
             if (rgb_value = RED)
@@ -170,6 +188,7 @@ printf("batery percent: %u\n", rkBatteryPercent());
                 go_to_blue();
             }
             // jizda zpet ke zdi nakonec eska
+            arm_up();
             forward(220);
             turn(93);
             back_button();
@@ -198,9 +217,13 @@ printf("batery percent: %u\n", rkBatteryPercent());
             forward(500);
             state = 17;
             break;
+        case 69:
+            state = 70;
+            klepeta_close();
+            go_to_red();
         }
     }
-    while(true){
+    while(false){
         //rgb_value = get_rgb();
         //printf("barva: %d \n", rgb_value);
         //delay(1000);
