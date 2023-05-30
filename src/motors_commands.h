@@ -79,25 +79,36 @@ void turn_by_wall()
     back_button();
 }
 
-uint16_t red, green, blue, clear;
+uint16_t red, green, blue, clear[3], clear_avg;
 
-void go_for_brick(){
+bool go_for_brick(){
     byte timer = 0;
     rkMotorsSetSpeed(50, 50);
-    while((clear < 200) && (timer <= 15)){
+    do{
         timer += 1;
-        tcs.getRawData(&red, &green, &blue, &clear);
-        printf("clear: %hu, timer: %hhu\n", clear, timer);
-        delay(200);
-    }
+        clear_avg = 0;
+        for (byte i = 0; i < 3; i++)
+        {
+            tcs.getRawData(&red, &green, &blue, &clear[i]);
+            printf("clear: %hu, timer: %hhu\n", clear, timer);
+            delay(50);
+        }
+        for (byte i = 0; i < 3; i++)
+        {
+            clear_avg += clear[i];
+        }
+        clear_avg /= 3;
+    }while((clear_avg < 500) && (timer <= 15));
     rkMotorsSetSpeed(0, 0);
-    if (clear < 200)
+    if (clear_avg > 500)
     {
         printf("found by rgb senzor\n");
+        return true;
     }
     else
     {
         printf("stoped by timer\n");
+        return false;
     }
     
 }
@@ -108,7 +119,8 @@ arm_up();
 back_button();
 forward(150);
 turn(-90);
-forward(-450);//doladit
+back_button();
+forward(150);
 turn(90);
 back_button();
 arm_back();
@@ -125,12 +137,17 @@ void go_to_green(){
 //sevre klepeta
 arm_up();
 back_button();
+forward(150);
+turn(-90);
+forward(-100 + (k*100));
+turn(90);
+back_button();
 arm_back();
 forward(30);
 klepeta_open();
 arm_up();
 forward(200);
-turn(-90);
+turn(90);
 }
 
 
@@ -140,7 +157,8 @@ arm_up();
 back_button();
 forward(150);
 turn(90);
-forward(-450);//doladit
+back_button();
+forward(150);
 turn(-90);
 back_button();
 arm_back();
@@ -148,5 +166,5 @@ forward(30);
 klepeta_open();
 arm_up();
 forward(200);
-turn(-90);
+turn(90);
 }

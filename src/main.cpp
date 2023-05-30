@@ -8,14 +8,8 @@ byte state = 1;
 
 // Funkce setup se zavolá vždy po startu robota.
 float g_US = 1;
+byte k = 0;
 
-typedef enum {
-    RED,
-    GREEN,
-    BLUE
-}RGB;
-
-RGB rgb_value;
 // pokud se nepovede neco inicializovat (RGB senzor), program se zasekne v teto funkci
 void trap()
 {
@@ -29,61 +23,9 @@ static const uint8_t TCS_SCL_pin = 22;
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_1X);
 
+#include "sensors_commands.h"
 #include "arm_commands.h"
 #include "motors_commands.h"
-
-void encodery() {
-    Serial.printf("L: %f, R: %f\n", rkMotorsGetPositionLeft(), rkMotorsGetPositionRight());
-    // rkMotorsGetPositionLeft();
-    // rkMotorsGetPositionRight();
-}
-
-void update_sensors() {
-    g_US = rkUltraMeasure(1);
-    printf(" g_US: %f \n", g_US);
-    //std::cout << " " << std::endl;
-}
-
-RGB rgb_get(){
-    float r, g, b;
-    tcs.getRGB(&r, &g, &b);
-    int red[10], green[10], blue[10];
-    for (size_t i = 0; i < 10; i++)
-    {
-        tcs.getRGB(&r, &g, &b);
-        red[i] = r;
-        green[i] = g;
-        blue[i] = b;
-    }
-    int sum_red = 0, sum_green = 0, sum_blue = 0;
-    for (size_t i = 0; i < 10; i++)
-    {
-        sum_red += red[i];
-        sum_green += green[i];
-        sum_blue += blue[i];
-    }
-    byte red_avg = sum_red / 10;
-    byte green_avg = sum_green / 10;
-    byte blue_avg = sum_blue / 10;
-
-    if (red_avg > green_avg && red_avg > blue_avg)
-    {
-        rgb_value = RED;
-        printf("RED\n");
-        return RED;
-    }
-    else if (blue_avg > red_avg && blue_avg > green_avg)
-    {
-        rgb_value = BLUE;
-        printf("BLUE\n");
-        return BLUE;
-    }
-    else{
-        rgb_value = GREEN;
-        printf("GREEN\n");
-        return GREEN;
-    }
-}
 
 void setup() {
     rkConfig cfg;
@@ -113,6 +55,11 @@ void setup() {
         if(rkButtonIsPressed(BTN_UP)){
                 break;
         }
+    }
+    // zhasnuti ledek
+    for (byte i = 0; i < 8; i++)
+    {
+        rkSmartLedsRGB(i, 0, 0, 0);
     }
     //kalibrace klepet
     for (size_t i = 0; i < 3; i++)
@@ -164,30 +111,51 @@ printf("batery percent: %u\n", rkBatteryPercent());
             forward(1750);
             // otocka do hriste
             turn_by_wall();
-            // jizda doprostred hriste
-            forward(550);
-            turn(-90);
-            back_button();
-            // jizda pro kostku
-            arm_down();     
-            go_for_brick();
-            klepeta_close();
-            //tady se rozhodne na jakou barvu robot pojede
-            rgb_value = rgb_get();
-            if (rgb_value == RED)
-            {
-                go_to_red();
+            for (size_t i = 0; i < 3; i++)
+            {            
+                // jizda doprostred hriste
+                forward(400 + (k*100)); k++;
+                turn(-90);
+                back_button();
+                // jizda pro kostku
+                arm_down(); bool brick;
+                //zapnuti ledek
+                for (byte i = 0; i < 8; i++)
+                {
+                    rkSmartLedsRGB(i, 255, 255, 255);
+                }     
+                brick = go_for_brick();
+                if (brick)
+                {            
+                    klepeta_close();
+                    //tady se rozhodne na jakou barvu robot pojede
+                    rgb_value = rgb_get();
+                    if (rgb_value == RED)
+                    {
+                        go_to_red();
+                    }
+                    else if (rgb_value == GREEN)
+                    {
+                        go_to_green();
+                    }
+                    else
+                    {
+                        go_to_blue();
+                    }
+                    // jizda zpet ke zdi nakonec eska
+                    back_button();
+                }
+                else
+                {
+                    i--; k++;
+                    back_button();
+                    forward(150);
+                    turn(-90);
+                    forward(-100);
+                    turn(90);
+                    back_button();
+                }
             }
-            else if (rgb_value == GREEN)
-            {
-                go_to_green();
-            }
-            else
-            {
-                go_to_blue();
-            }
-            // jizda zpet ke zdi nakonec eska
-            back_button();
             forward(50);
             turn(80);
             back_button();
@@ -201,22 +169,28 @@ printf("batery percent: %u\n", rkBatteryPercent());
         case 11:
             state = 12;
             // musi se dopocitat
-            curve(200, 90, 13, true);
+            curve(190, 90, 13, true);
             break;
         case 13:
             state = 14;
+            forward(100);
             // musi se dopocitat
-            curve(180, 180, 15, false);
+            curve(140, 180, 15, false);
             break;
         case 15:
             state = 16;
-            forward(500);
+            forward(600);
             state = 17;
             break;
         }
     }
     while(true){
     }
+    for (byte i = 0; i < 8; i++)
+    {
+        rkSmartLedsRGB(i, 255, 255, 255);
+    }
+    
 }
 void loop() {
     // precteni a poslani RGB
