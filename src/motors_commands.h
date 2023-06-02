@@ -79,28 +79,29 @@ void turn_by_wall()
     back_button();
 }
 
-uint16_t red, green, blue, clear[3], clear_avg;
+uint16_t red, green, blue, clear[2], clear_avg;
 
 bool go_for_brick(){
     byte timer = 0;
-    rkMotorsSetSpeed(50, 50);
+    rkMotorsSetSpeed(speed, speed);
+    delay(1000);
     do{
         timer += 1;
         clear_avg = 0;
-        for (byte i = 0; i < 3; i++)
+        for (byte i = 0; i < 2; i++)
         {
             tcs.getRawData(&red, &green, &blue, &clear[i]);
-            printf("clear: %hu, timer: %hhu\n", clear, timer);
+            printf("clear: %hu, timer: %hhu\n", clear[i], timer);
             delay(50);
         }
-        for (byte i = 0; i < 3; i++)
+        for (byte i = 0; i < 2; i++)
         {
             clear_avg += clear[i];
         }
-        clear_avg /= 3;
-    }while((clear_avg < 500) && (timer <= 15));
+        clear_avg /= 2;
+    }while((clear_avg > 1000) && (timer < 8));
     rkMotorsSetSpeed(0, 0);
-    if (clear_avg > 500)
+    if (clear_avg < 1000)
     {
         printf("found by rgb senzor\n");
         return true;
@@ -113,58 +114,57 @@ bool go_for_brick(){
     
 }
 //robot jede na cervene pole
+int r_dist = 0, g_dist = 0, b_dist = 0;
 void go_to_red(){
 //sevre klepeta
-arm_up();
-back_button();
 forward(150);
 turn(-90);
 back_button();
-forward(150);
+forward(150 + r_dist);
 turn(90);
 back_button();
 arm_back();
-forward(30);
+forward(35);
 klepeta_open();
 arm_up();
 forward(200);
 turn(-90);
 forward(500);
 turn(180);
+r_dist += 50;
 }
 
 void go_to_green(){
 //sevre klepeta
-arm_up();
-back_button();
 forward(150);
-turn(-90);
-forward(-100 + (k*100));
 turn(90);
 back_button();
+forward(500 + g_dist);
+turn(-90);
+back_button();
 arm_back();
-forward(30);
+forward(35);
 klepeta_open();
 arm_up();
 forward(200);
 turn(90);
+g_dist += 50;
 }
 
 
 void go_to_blue(){
 //sevre klepeta
-arm_up();
-back_button();
 forward(150);
 turn(90);
 back_button();
-forward(150);
+forward(150 + b_dist);
 turn(-90);
 back_button();
 arm_back();
-forward(30);
+forward(35);
 klepeta_open();
 arm_up();
 forward(200);
 turn(90);
+b_dist += 50;
 }

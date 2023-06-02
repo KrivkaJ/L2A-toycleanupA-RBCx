@@ -23,8 +23,8 @@ static const uint8_t TCS_SCL_pin = 22;
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_1X);
 
-#include "sensors_commands.h"
 #include "arm_commands.h"
+#include "sensors_commands.h"
 #include "motors_commands.h"
 
 void setup() {
@@ -111,19 +111,19 @@ printf("batery percent: %u\n", rkBatteryPercent());
             forward(1750);
             // otocka do hriste
             turn_by_wall();
-            for (size_t i = 0; i < 3; i++)
+            for (size_t i = 0; i < 5; i++)
             {            
                 // jizda doprostred hriste
-                forward(400 + (k*100)); k++;
+                forward(900 - (k*100)); k++;
                 turn(-90);
                 back_button();
                 // jizda pro kostku
-                arm_down(); bool brick;
                 //zapnuti ledek
                 for (byte i = 0; i < 8; i++)
                 {
                     rkSmartLedsRGB(i, 255, 255, 255);
                 }     
+                arm_down(); bool brick;
                 brick = go_for_brick();
                 if (brick)
                 {            
@@ -150,8 +150,6 @@ printf("batery percent: %u\n", rkBatteryPercent());
                     i--; k++;
                     back_button();
                     forward(150);
-                    turn(-90);
-                    forward(-100);
                     turn(90);
                     back_button();
                 }
@@ -184,7 +182,12 @@ printf("batery percent: %u\n", rkBatteryPercent());
             break;
         }
     }
+    for (byte i = 0; i < 8; i++)
+    {
+        rkSmartLedsRGB(i, 255, 255, 255);
+    }
     while(true){
+        go_for_brick();
     }
     for (byte i = 0; i < 8; i++)
     {

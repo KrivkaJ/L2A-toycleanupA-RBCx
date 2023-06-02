@@ -19,10 +19,12 @@ void update_sensors() {
 }
 
 RGB rgb_get(){
+    arm_up();
+    rkMotorsSetSpeed(-100, -100);
     float r, g, b;
     tcs.getRGB(&r, &g, &b);
-    int red[10], green[10], blue[10];
-    for (size_t i = 0; i < 10; i++)
+    int red[3], green[3], blue[3];
+    for (size_t i = 0; i < 3; i++)
     {
         tcs.getRGB(&r, &g, &b);
         red[i] = r;
@@ -30,15 +32,24 @@ RGB rgb_get(){
         blue[i] = b;
     }
     int sum_red = 0, sum_green = 0, sum_blue = 0;
-    for (size_t i = 0; i < 10; i++)
+    for (size_t i = 0; i < 3; i++)
     {
         sum_red += red[i];
         sum_green += green[i];
         sum_blue += blue[i];
     }
-    byte red_avg = sum_red / 10;
-    byte green_avg = sum_green / 10;
-    byte blue_avg = sum_blue / 10;
+    byte red_avg = sum_red / 3;
+    byte green_avg = sum_green / 3;
+    byte blue_avg = sum_blue / 3;
+    while (true)
+    {
+        if (rkButtonIsPressed(BTN_RIGHT))
+        {
+            break;
+        }
+    }
+    delay(500);
+    rkMotorsSetSpeed(0, 0);
 
     if (red_avg > green_avg && red_avg > blue_avg)
     {
