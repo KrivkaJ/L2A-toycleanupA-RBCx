@@ -18,8 +18,8 @@ void turn(int degrees)
 //oblouk
 // tue=doprava, false=doleva
 void curve(int radius, int degrees, byte new_state, bool right){
-    int sR = radius/radius * 40;
-    int sL = (radius + wheel_diameter) / radius * 40;
+    int sR = radius/radius * 30;
+    int sL = (radius + wheel_diameter) / radius * 30;
     printf("sR: %i, sL: %i\n", sR, sL);
     if (right)
     {
@@ -82,7 +82,7 @@ uint16_t red, green, blue, clear[2], clear_avg;
 
 bool go_for_brick(){
     byte timer = 0;
-    rkMotorsSetSpeed(speed, speed);
+    rkMotorsSetSpeed(20, 20);
     delay(1000);
     do{
         timer += 1;
@@ -98,7 +98,7 @@ bool go_for_brick(){
             clear_avg += clear[i];
         }
         clear_avg /= 2;
-    }while((clear_avg > 1000) && (timer < 8));
+    }while((clear_avg > 1000) && (timer < 4));
     rkMotorsSetSpeed(0, 0);
     if (clear_avg < 1000)
     {

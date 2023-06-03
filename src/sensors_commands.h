@@ -53,17 +53,20 @@ RGB rgb_get(){
     {
         rgb_value = RED;
         printf("RED\n");
+        rkLedRed(true);
         return RED;
     }
     else if (blue_avg > red_avg && blue_avg > green_avg)
     {
         rgb_value = BLUE;
         printf("BLUE\n");
+        rkLedBlue(true);
         return BLUE;
     }
     else{
         rgb_value = GREEN;
         printf("GREEN\n");
+        rkLedGreen(true);
         return GREEN;
     }
 }
