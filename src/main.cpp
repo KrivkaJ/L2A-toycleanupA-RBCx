@@ -3,7 +3,7 @@
 #include "robotka.h"
 #include "Adafruit_TCS34725.h"
 
-byte state = 69;
+byte state = 1;
 
 
 // Funkce setup se zavolá vždy po startu robota.
