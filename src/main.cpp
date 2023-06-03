@@ -2,8 +2,12 @@
 #include "SmartServoBus.hpp"
 #include "robotka.h"
 #include "Adafruit_TCS34725.h"
+#include <thread>
+#include <atomic>
 
 byte state = 1;
+unsigned long startTime = 0;
+const unsigned long FinalTime = 220000;
 
 
 // Funkce setup se zavolá vždy po startu robota.
@@ -74,6 +78,10 @@ void setup() {
                 break;
         }
     }
+    // zapise startovni cas
+    startTime = millis();
+    printf("startTime: %lu\n", startTime);
+    // vypise procenta baterky
 printf("batery percent: %u\n", rkBatteryPercent());
     /////////////////////////////////////
     while (true)
@@ -111,7 +119,8 @@ printf("batery percent: %u\n", rkBatteryPercent());
             forward(1750);
             // otocka do hriste
             turn_by_wall();
-            for (size_t i = 0; i < 5; i++)
+            byte brick_count = 5;
+            for (byte i = 0; i < brick_count; i++)
             {            
                 // jizda doprostred hriste
                 forward(900 - (k*100)); k++;
@@ -132,20 +141,28 @@ printf("batery percent: %u\n", rkBatteryPercent());
                     rkMotorsSetSpeed(-100, -100);
                     //tady se rozhodne na jakou barvu robot pojede
                     rgb_value = rgb_get();
-                    if (rgb_value == RED)
+                    if ((brick_count < 4)  && (rgb_value != RED))
                     {
-                        go_to_red();
-                    }
-                    else if (rgb_value == GREEN)
-                    {
-                        go_to_green();
-                    }
-                    else
-                    {
-                        go_to_blue();
+                        if (rgb_value == RED)
+                        {
+                            go_to_red();
+                        }
+                        else if (rgb_value == GREEN)
+                        {
+                            go_to_green();
+                        }
+                        else
+                        {
+                            go_to_blue();
+                        }
                     }
                     // jizda zpet ke zdi nakonec eska
                     back_button();
+                    if ((i = 4) && ((millis() - startTime) < FinalTime))
+                    {
+                        brick_count = 6;
+                    }
+                    
                 }
                 else
                 {
