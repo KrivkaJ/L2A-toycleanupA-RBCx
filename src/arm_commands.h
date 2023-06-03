@@ -55,14 +55,14 @@ void klepeta_close(){
     for (size_t i = 0; i < 2; i++)
     {
         servoBus.set(0, 110_deg, 200.f, 1.f);
-        delay(2000);
+        delay(300);
     }
 }
 void klepeta_open(){
     for (size_t i = 0; i < 2; i++)
     {
         servoBus.set(0, 140_deg, 200.f, 1.f);
-        delay(2000);
+        delay(300);
     }
 }
 

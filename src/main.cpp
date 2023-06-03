@@ -3,7 +3,7 @@
 #include "robotka.h"
 #include "Adafruit_TCS34725.h"
 
-byte state = 1;
+byte state = 69;
 
 
 // Funkce setup se zavolá vždy po startu robota.
@@ -118,7 +118,7 @@ printf("batery percent: %u\n", rkBatteryPercent());
                 turn(-90);
                 back_button();
                 // jizda pro kostku
-                //zapnuti ledek
+                //zapnuti ledek                 
                 for (byte i = 0; i < 8; i++)
                 {
                     rkSmartLedsRGB(i, 255, 255, 255);
@@ -128,6 +128,8 @@ printf("batery percent: %u\n", rkBatteryPercent());
                 if (brick)
                 {            
                     klepeta_close();
+                    arm_up();
+                    rkMotorsSetSpeed(-100, -100);
                     //tady se rozhodne na jakou barvu robot pojede
                     rgb_value = rgb_get();
                     if (rgb_value == RED)
@@ -180,6 +182,10 @@ printf("batery percent: %u\n", rkBatteryPercent());
             forward(600);
             state = 17;
             break;
+        case 69:
+            state = 70;
+            klepeta_close();
+            klepeta_open();
         }
     }
     for (byte i = 0; i < 8; i++)

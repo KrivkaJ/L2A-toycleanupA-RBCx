@@ -19,8 +19,6 @@ void update_sensors() {
 }
 
 RGB rgb_get(){
-    arm_up();
-    rkMotorsSetSpeed(-100, -100);
     float r, g, b;
     tcs.getRGB(&r, &g, &b);
     int red[3], green[3], blue[3];

@@ -71,11 +71,10 @@ void turn_by_wall()
     rkServosSetPosition(3, -90);
     delay(1000);
     rkServosSetPosition(3, 90);
-    delay(1000);
-    rkServosSetPosition(3, -90);
-    delay(1000);
+    delay(100);
+    rkServosSetPosition(3, -80);
+    delay(500);
     rkServosSetPosition(3, 90);
-    delay(1000);
     back_button();
 }
 
@@ -120,7 +119,7 @@ void go_to_red(){
 forward(150);
 turn(-90);
 back_button();
-forward(150 + r_dist);
+forward(100 + r_dist);
 turn(90);
 back_button();
 arm_back();
