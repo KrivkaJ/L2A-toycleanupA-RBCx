@@ -122,9 +122,14 @@ void setup() {
                     k++;
                     if (k > 6)
                     {
-                        k -= 1.5;
+                        k = 0.5;
                     }
+                    if(k = 0){
+                        turn(-100);
+                    }
+                    else{
                     turn(-90);
+                    }
                     back_button();
                     // jizda pro kostku
                     //zapnuti ledek
