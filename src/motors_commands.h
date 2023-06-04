@@ -12,7 +12,7 @@ void forward(int mm)
 // + doprava - doleva
 void turn(int degrees)
 {
-    rkMotorsDrive(3.141 * wheel_diameter * degrees / 360 * ticksToMm, -3.141 * wheel_diameter * degrees / 360 * ticksToMm, speed);
+    rkMotorsDrive(3.141 * wheel_diameter * degrees / 360 * ticksToMm, -3.141 * wheel_diameter * degrees / 360 * ticksToMm, 40);
 }
 
 //oblouk
@@ -78,29 +78,20 @@ void turn_by_wall()
     back_button();
 }
 
-uint16_t red, green, blue, clear[2], clear_avg;
+uint16_t red, green, blue, clear;
 
 bool go_for_brick(){
     byte timer = 0;
-    rkMotorsSetSpeed(20, 20);
+    rkMotorsSetSpeed(30, 30);
     delay(1000);
     do{
         timer += 1;
-        clear_avg = 0;
-        for (byte i = 0; i < 2; i++)
-        {
-            tcs.getRawData(&red, &green, &blue, &clear[i]);
-            printf("clear: %hu, timer: %hhu\n", clear[i], timer);
+            tcs.getRawData(&red, &green, &blue, &clear);
+            printf("clear: %hu, timer: %hhu\n", clear, timer);
             delay(50);
-        }
-        for (byte i = 0; i < 2; i++)
-        {
-            clear_avg += clear[i];
-        }
-        clear_avg /= 2;
-    }while((clear_avg > 1000) && (timer < 4));
+    }while((clear > 1000) && (timer < 8));
     rkMotorsSetSpeed(0, 0);
-    if (clear_avg < 1000)
+    if (clear < 1000)
     {
         printf("found by rgb senzor\n");
         return true;

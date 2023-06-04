@@ -5,7 +5,7 @@
 
 byte state = 1;
 unsigned long startTime = 0;
-const unsigned long FinalTime = 220000;
+const unsigned long FinalTime = 250000;
 
 // Funkce setup se zavolá vždy po startu robota.
 float g_US = 1;
@@ -116,7 +116,7 @@ void setup() {
                 forward(1750);
                 // otocka do hriste
                 turn_by_wall();
-                for (byte i = 0; i < brick_count; i++) {
+                for (byte i = 0; i < 5; i++) {
                     // jizda doprostred hriste
                     forward(900 - (k * 100));
                     k++;
@@ -140,7 +140,6 @@ void setup() {
                         rkMotorsSetSpeed(-100, -100);
                         //tady se rozhodne na jakou barvu robot pojede
                         rgb_value = rgb_get();
-                        if ((brick_count < 4) && (rgb_value != RED)) {
                             if (rgb_value == RED) {
                                 go_to_red();
                             } 
@@ -151,13 +150,8 @@ void setup() {
                                 go_to_blue();
                             }
                             rkLedAll(false);
-                        }
                         // jizda zpet ke zdi nakonec eska
                         back_button();
-                        if ((i = (brick_count-1)) && ((millis() - startTime) < FinalTime)) {
-                            brick_count++;
-                        }
-
                     } else {
                         i--;
                         k++;
@@ -166,6 +160,9 @@ void setup() {
                         turn(90);
                         back_button();
                     }
+                    if ((i = 4) && ((millis() - startTime) < FinalTime)) {
+                            i--;
+                        }
                 }
                 forward(50);
                 turn(80);
